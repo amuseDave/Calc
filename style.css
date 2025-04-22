@@ -7,6 +7,7 @@
 }
 
 html {
+  font-family: "Roboto", sans-serif;
   font-size: 62.5%;
   scroll-behavior: smooth;
 }
@@ -39,7 +40,7 @@ body {
   display: grid;
   gap: 0.2rem;
   grid-template-columns: repeat(4, 10rem);
-  grid-template-rows: repeat(5, 5.4rem);
+  grid-template-rows: repeat(5, 5.2rem);
 }
 
 #monitor {
@@ -48,11 +49,40 @@ body {
 }
 
 .button {
+  user-select: none;
+  font-size: 1.8rem;
   background-color: rgba(255, 255, 255, 0.1);
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 6px;
   color: white;
-  /* border: 1px solid rgba(255, 255, 255, 0.337); */
+  transition: background-color ease-in-out 0.1s;
+}
+
+svg {
+  width: 2.2rem;
+}
+
+#clear {
+  font-size: 1.6rem;
+}
+
+#result {
+  color: black;
+  background-color: rgb(207, 112, 88);
+}
+#result:hover {
+  background-color: rgba(207, 112, 88, 0.766);
+}
+
+.button:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.button.lighter-bg {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+.button.lighter-bg:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
