@@ -33,6 +33,7 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.155);
   border-radius: 0.4rem;
   padding: 0.6rem;
+  padding-top: 1.6rem;
 }
 
 #buttons-grid {
@@ -82,6 +83,7 @@ svg {
   background-color: rgba(255, 255, 255, 0.1);
 }
 #monitor {
+  position: relative;
   margin-top: 0.8rem;
   height: 6.8rem;
   color: white;
@@ -101,4 +103,12 @@ svg {
 
 #monitor-text {
   display: inline-block;
+}
+
+#second-monitor {
+  position: absolute;
+  top: -1rem;
+  right: 1.8rem;
+  font-size: 1.6rem;
+  color: rgb(141, 141, 141);
 }
