@@ -7,13 +7,14 @@ const secondMonitorEl = document.getElementById("second-monitor");
 const monitorValues = ["0"];
 const calculatorState = {
   isDot: false,
+  dotIndex: null,
   isPlusMinus: false,
-  curVal: 0,
+  curVal: "",
   curOperation: "",
+  nextOperation: "",
 };
 
 monitorTextEl.textContent = monitorValues[0];
-// secondMonitorEl.textContent = monitorValues[0];
 
 function handleCalculator(e) {
   const button = e.target.closest(".button");
@@ -22,21 +23,25 @@ function handleCalculator(e) {
   const { value } = button.dataset;
   if (!value) return;
 
+  const operations = value === "minus" || value === "plus";
+
+  if (operations) handleOperations(value);
   if (+value >= 0 && +value <= 9) handleNumbers(value);
   else if (value === "delete") handleDelete();
   else if (value === "dot") handleDot();
   else if (value === "clear") handleClear();
   else if (value === "plus-or-minus") handlePlusMinus();
-  else if (value === "plus") handlePlus();
-  else if (value === "minus") handleMinus();
 
-  displaySecondMonitor();
+  if (value === "clear" || value === "minus" || value === "plus") {
+    displaySecondMonitor();
+  }
   displayMonitorValues();
 }
 
 function handleNumbers(value) {
   if (monitorValues.length === 1 && monitorValues[0] === "0") {
     // Set other value than 0
+
     monitorValues[0] = value;
   } else {
     const letterWidth = monitorLetterEl.clientWidth;
@@ -61,7 +66,12 @@ function handleDelete() {
   }
 }
 function handleClear() {
-  if (monitorValues.length === 1 && monitorValues[0] === "0" && !calculatorState.curVal) {
+  if (
+    monitorValues.length === 1 &&
+    monitorValues[0] === "0" &&
+    !calculatorState.curVal &&
+    !calculatorState.curOperation
+  ) {
     return;
   }
   calculatorState.curVal = 0;
@@ -74,65 +84,71 @@ function handleDot() {
   else {
     calculatorState.isDot = true;
     monitorValues.push(".");
+    calculatorState.dotIndex = monitorValues.length - 1;
   }
 }
 
 function handlePlusMinus() {
-  if (!isValidMonitor()) return;
+  if (!+monitorValues.join("")) return;
   calculatorState.isPlusMinus = !calculatorState.isPlusMinus;
 }
 
-function handlePlus() {
-  if (!isValidMonitor()) {
-    if (calculatorState.curVal) calculatorState.curOperation = " +";
-    return;
-  }
-
-  calculatorState.curOperation = " +";
-
-  // Convert string integer
-  // Add values for the calc
-  let val = +monitorValues.join("");
-  if (calculatorState.isPlusMinus) val = -val;
-
-  if (calculatorState.curVal) {
-    calculatorState.curVal = calculatorState.curVal + val;
+function handleOperations(operation) {
+  const val = +monitorValues.join("");
+  if (!val) {
+    if (calculatorState.isDot) resetMonitorValues();
   } else {
-    calculatorState.curVal = val;
-  }
-}
-function handleMinus() {
-  if (!isValidMonitor()) {
-    if (calculatorState.curVal) calculatorState.curOperation = " -";
-    return;
+    if (calculatorState.isPlusMinus) val = -val;
+
+    if (calculatorState.curOperation === " +") {
+      calculatorState.curVal = calculatorState.curVal + val;
+    }
+    //
+    else if (calculatorState.curOperation === " -") {
+      calculatorState.curVal = calculatorState.curVal - val;
+    }
+    //
+    else calculatorState.curVal = val;
   }
 
-  calculatorState.curOperation = " -";
-
-  // Convert string integer
-  // Add values for the calc
-  let val = +monitorValues.join("");
-  if (calculatorState.isPlusMinus) val = -val;
-
-  if (calculatorState.curVal) {
-    calculatorState.curVal = calculatorState.curVal - val;
-  } else {
-    calculatorState.curVal = val;
-  }
+  if (operation === "minus") calculatorState.curOperation = " -";
+  else if (operation === "plus") calculatorState.curOperation = " +";
 }
 
 function displayMonitorValues() {
   const plusMinus = calculatorState.isPlusMinus ? "-" : "";
-  monitorTextEl.textContent = plusMinus + monitorValues.join("");
+
+  let numStr;
+  if (calculatorState.isDot) {
+    numStr = new Intl.NumberFormat("en-US", {
+      style: "decimal",
+    }).format(monitorValues.slice(0, calculatorState.dotIndex).join(""));
+
+    numStr += monitorValues.slice(calculatorState.dotIndex).join("");
+  } else {
+    numStr = new Intl.NumberFormat("en-US", {
+      style: "decimal",
+    }).format(monitorValues.join(""));
+  }
+
+  monitorTextEl.textContent = plusMinus + numStr;
 }
 
 function displaySecondMonitor() {
   const val = calculatorState.curVal;
-  const str = val + calculatorState.curOperation;
+  console.log(val, calculatorState.curOperation);
+
+  if (val === "") return;
+
+  const numStr = new Intl.NumberFormat("en-US", {
+    style: "decimal",
+  }).format(val);
+
+  const str = numStr + calculatorState.curOperation;
   if (str === secondMonitorEl.textContent) return;
 
-  resetMonitorValues();
   secondMonitorEl.textContent = str;
+  resetMonitorValues();
 }
 
 function resetMonitorValues() {
@@ -141,13 +157,6 @@ function resetMonitorValues() {
   monitorValues[0] = "0";
   calculatorState.isPlusMinus = false;
   calculatorState.isDot = false;
-}
-
-function isValidMonitor() {
-  if (!+monitorValues.join("")) {
-    resetMonitorValues();
-    return false;
-  } else return true;
 }
 
 buttonsGrid.addEventListener("click", handleCalculator);
