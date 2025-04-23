@@ -1,9 +1,10 @@
+import Decimal from "decimal.js";
+
 const buttonsGrid = document.getElementById("buttons-grid");
 const monitorTextContainerEl = document.getElementById("monitor-text-container");
 const monitorTextEl = document.getElementById("monitor-text");
 const monitorLetterEl = document.getElementById("monitor-letter-placeholder");
 const secondMonitorEl = document.getElementById("second-monitor");
-
 const monitorValues = ["0"];
 const calculatorState = {
   isDot: false,
@@ -24,7 +25,11 @@ function handleCalculator(e) {
   if (!value) return;
 
   const operations =
-    value === "minus" || value === "plus" || value === "divide" || value === "multiply";
+    value === "minus" ||
+    value === "plus" ||
+    value === "divide" ||
+    value === "multiply" ||
+    value === "result";
 
   if (+value >= 0 && +value <= 9) handleNumbers(value);
   else if (operations) {
@@ -58,6 +63,40 @@ function handleNumbers(value) {
   }
 }
 
+function handleOperations(operation) {
+  let val = +monitorValues.join("");
+  if (!val) {
+    if (calculatorState.isDot) resetMonitorValues();
+  } else {
+    if (calculatorState.isPlusMinus) val = -val;
+
+    const curVal = new Decimal(`${calculatorState.curVal}` || "0");
+
+    if (calculatorState.curOperation === " +") {
+      calculatorState.curVal = curVal.add(`${val}`);
+    }
+    //
+    else if (calculatorState.curOperation === " -") {
+      calculatorState.curVal = curVal.sub(`${val}`);
+    }
+    //
+    else if (calculatorState.curOperation === " ÷") {
+      calculatorState.curVal = curVal.div(`${val}`);
+    }
+    //
+    else if (calculatorState.curOperation === " ×") {
+      calculatorState.curVal = curVal.mul(`${val}`);
+    }
+    //
+    else calculatorState.curVal = val;
+  }
+
+  if (operation === "minus") calculatorState.curOperation = " -";
+  else if (operation === "plus") calculatorState.curOperation = " +";
+  else if (operation === "divide") calculatorState.curOperation = " ÷";
+  else if (operation === "multiply") calculatorState.curOperation = " ×";
+  else if (operation === "result") calculatorState.curOperation = " =";
+}
 function handleDelete() {
   if (monitorValues.length > 1) {
     const val = monitorValues.pop();
@@ -95,36 +134,6 @@ function handlePlusMinus() {
   calculatorState.isPlusMinus = !calculatorState.isPlusMinus;
 }
 
-function handleOperations(operation) {
-  let val = +monitorValues.join("");
-  if (!val) {
-    if (calculatorState.isDot) resetMonitorValues();
-  } else {
-    if (calculatorState.isPlusMinus) val = -val;
-
-    if (calculatorState.curOperation === " +") {
-      calculatorState.curVal = calculatorState.curVal + val;
-    }
-    //
-    else if (calculatorState.curOperation === " -") {
-      calculatorState.curVal = calculatorState.curVal - val;
-    }
-    //
-    else if (calculatorState.curOperation === " ÷") {
-      calculatorState.curVal = calculatorState.curVal / val;
-    } else if (calculatorState.curOperation === " ×") {
-      calculatorState.curVal = calculatorState.curVal * val;
-    }
-    //
-    else calculatorState.curVal = val;
-  }
-
-  if (operation === "minus") calculatorState.curOperation = " -";
-  else if (operation === "plus") calculatorState.curOperation = " +";
-  else if (operation === "divide") calculatorState.curOperation = " ÷";
-  else if (operation === "multiply") calculatorState.curOperation = " ×";
-}
-
 function displayMonitorValues() {
   const plusMinus = calculatorState.isPlusMinus ? "-" : "";
 
@@ -149,11 +158,24 @@ function displaySecondMonitor() {
 
   if (val === "") return;
 
-  const numStr = new Intl.NumberFormat("en-US", {
-    style: "decimal",
-  }).format(val);
+  let numStr;
 
-  const str = numStr + calculatorState.curOperation;
+  const valStr = `${val}`;
+  const dotIndex = valStr.split("").findIndex((val) => val === ".");
+
+  if (dotIndex !== -1) {
+    numStr = new Intl.NumberFormat("en-US", {
+      style: "decimal",
+    }).format(valStr.slice(0, dotIndex));
+    numStr += valStr.slice(dotIndex);
+  } else {
+    numStr = new Intl.NumberFormat("en-US", {
+      style: "decimal",
+    }).format(val);
+  }
+  const op = calculatorState.curOperation;
+
+  const str = numStr + op;
   if (str === secondMonitorEl.textContent) return;
 
   secondMonitorEl.textContent = str;
