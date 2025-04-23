@@ -147,3 +147,83 @@ svg {
   visibility: hidden;
   pointer-events: none;
 }
+
+@media (max-width: 29em) {
+  #calc {
+    background-size: 250%;
+    padding: 0.4rem;
+    padding-top: 2rem;
+  }
+
+  #buttons-grid {
+    gap: 0.2rem;
+    grid-template-columns: repeat(4, 9rem);
+    grid-template-rows: repeat(5, 4.6rem);
+    margin-top: 1rem;
+  }
+  .button {
+    font-size: 1.6rem;
+  }
+  svg {
+    width: 1.9rem;
+  }
+
+  .error svg {
+    width: 1.3rem;
+  }
+  #monitor {
+    height: 6.4rem;
+    font-size: 4.4rem;
+  }
+  #monitor-letter-placeholder {
+    font-size: 4.4rem;
+  }
+  #second-monitor {
+    font-size: 1.7rem;
+  }
+
+  #second-monitor-letter-placeholder {
+    font-size: 1.7rem;
+  }
+}
+@media (max-width: 25em) {
+  #buttons-grid {
+    grid-template-columns: repeat(4, 8rem);
+    grid-template-rows: repeat(5, 4.1rem);
+    margin-top: 0rem;
+  }
+  .button {
+    font-size: 1.4rem;
+  }
+  svg {
+    width: 1.7rem;
+  }
+
+  .error svg {
+    width: 1.2rem;
+  }
+  .error {
+    font-size: 1rem;
+  }
+  #monitor {
+    padding: 0.8rem;
+
+    font-size: 4rem;
+  }
+  #monitor-letter-placeholder {
+    font-size: 4rem;
+  }
+  #second-monitor {
+    font-size: 1.5rem;
+  }
+
+  #second-monitor-letter-placeholder {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 22em) {
+  html {
+    font-size: 55.25%;
+  }
+}
