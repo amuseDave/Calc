@@ -23,18 +23,19 @@ function handleCalculator(e) {
   const { value } = button.dataset;
   if (!value) return;
 
-  const operations = value === "minus" || value === "plus";
+  const operations =
+    value === "minus" || value === "plus" || value === "divide" || value === "multiply";
 
-  if (operations) handleOperations(value);
   if (+value >= 0 && +value <= 9) handleNumbers(value);
-  else if (value === "delete") handleDelete();
+  else if (operations) {
+    handleOperations(value);
+    displaySecondMonitor();
+  } else if (value === "delete") handleDelete();
   else if (value === "dot") handleDot();
-  else if (value === "clear") handleClear();
+  else if (value === "clear") resetMonitorValues();
+  else if (value === "reset") handleReset();
   else if (value === "plus-or-minus") handlePlusMinus();
 
-  if (value === "clear" || value === "minus" || value === "plus") {
-    displaySecondMonitor();
-  }
   displayMonitorValues();
 }
 
@@ -65,7 +66,7 @@ function handleDelete() {
     resetMonitorValues();
   }
 }
-function handleClear() {
+function handleReset() {
   if (
     monitorValues.length === 1 &&
     monitorValues[0] === "0" &&
@@ -74,7 +75,8 @@ function handleClear() {
   ) {
     return;
   }
-  calculatorState.curVal = 0;
+  calculatorState.curVal = "";
+  secondMonitorEl.textContent = "";
   calculatorState.curOperation = "";
   resetMonitorValues();
 }
@@ -94,7 +96,7 @@ function handlePlusMinus() {
 }
 
 function handleOperations(operation) {
-  const val = +monitorValues.join("");
+  let val = +monitorValues.join("");
   if (!val) {
     if (calculatorState.isDot) resetMonitorValues();
   } else {
@@ -108,11 +110,19 @@ function handleOperations(operation) {
       calculatorState.curVal = calculatorState.curVal - val;
     }
     //
+    else if (calculatorState.curOperation === " ÷") {
+      calculatorState.curVal = calculatorState.curVal / val;
+    } else if (calculatorState.curOperation === " ×") {
+      calculatorState.curVal = calculatorState.curVal * val;
+    }
+    //
     else calculatorState.curVal = val;
   }
 
   if (operation === "minus") calculatorState.curOperation = " -";
   else if (operation === "plus") calculatorState.curOperation = " +";
+  else if (operation === "divide") calculatorState.curOperation = " ÷";
+  else if (operation === "multiply") calculatorState.curOperation = " ×";
 }
 
 function displayMonitorValues() {
@@ -136,7 +146,6 @@ function displayMonitorValues() {
 
 function displaySecondMonitor() {
   const val = calculatorState.curVal;
-  console.log(val, calculatorState.curOperation);
 
   if (val === "") return;
 
