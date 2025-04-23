@@ -5,6 +5,15 @@ const monitorTextContainerEl = document.getElementById("monitor-text-container")
 const monitorTextEl = document.getElementById("monitor-text");
 const monitorLetterEl = document.getElementById("monitor-letter-placeholder");
 const secondMonitorEl = document.getElementById("second-monitor");
+const secondMonitorLetterEl = document.getElementById(
+  "second-monitor-letter-placeholder"
+);
+
+const errorMessageEl = document.getElementById("error-message");
+const errorContainerEl = document.getElementById("error-container");
+
+let timeoutId;
+
 const monitorValues = ["0"];
 const calculatorState = {
   isDot: false,
@@ -54,9 +63,15 @@ function handleNumbers(value) {
     const monitorWidth = monitorTextContainerEl.clientWidth;
     const monitorTextWidth = monitorTextEl.clientWidth;
 
+    // Handle error for large input
     if (monitorTextWidth + letterWidth > monitorWidth) {
-      console.log("handle error alert for max inputs");
-      // Handle error alert to max inputs
+      errorMessageEl.textContent = "Input exceeds display limit";
+      errorContainerEl.classList.remove("hidden");
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        errorContainerEl.classList.add("hidden");
+      }, 3000);
+
       return;
     }
     monitorValues.push(value);
@@ -72,23 +87,28 @@ function handleOperations(operation) {
 
     const curVal = new Decimal(`${calculatorState.curVal}` || "0");
 
-    if (calculatorState.curOperation === " +") {
-      calculatorState.curVal = curVal.add(`${val}`);
-    }
-    //
-    else if (calculatorState.curOperation === " -") {
-      calculatorState.curVal = curVal.sub(`${val}`);
-    }
-    //
-    else if (calculatorState.curOperation === " ÷") {
-      calculatorState.curVal = curVal.div(`${val}`);
-    }
-    //
-    else if (calculatorState.curOperation === " ×") {
-      calculatorState.curVal = curVal.mul(`${val}`);
-    }
-    //
-    else calculatorState.curVal = val;
+    if (calculatorState.curOperation === " +") val = curVal.add(`${val}`);
+    else if (calculatorState.curOperation === " -") val = curVal.sub(`${val}`);
+    else if (calculatorState.curOperation === " ÷") val = curVal.div(`${val}`);
+    else if (calculatorState.curOperation === " ×") val = curVal.mul(`${val}`);
+
+    const numStr = new Intl.NumberFormat("en-US", {
+      style: "decimal",
+    }).format(val);
+    const totalWidth = secondMonitorLetterEl.clientWidth * numStr.length;
+    const monitorWidth = monitorTextContainerEl.clientWidth;
+
+    // Handle error for large input
+    if (totalWidth > monitorWidth) {
+      errorMessageEl.textContent = "Result too large to compute";
+      errorContainerEl.classList.remove("hidden");
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        errorContainerEl.classList.add("hidden");
+      }, 3000);
+
+      return;
+    } else calculatorState.curVal = val;
   }
 
   if (operation === "minus") calculatorState.curOperation = " -";

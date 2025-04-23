@@ -21,6 +21,7 @@ body {
 }
 
 #calc {
+  position: relative;
   background: radial-gradient(
       circle at bottom,
       rgba(255, 255, 255, 0.01),
@@ -33,7 +34,7 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.155);
   border-radius: 0.4rem;
   padding: 0.6rem;
-  padding-top: 1.6rem;
+  padding-top: 2.4rem;
 }
 
 #buttons-grid {
@@ -112,4 +113,37 @@ svg {
   right: 1.8rem;
   font-size: 1.8rem;
   color: rgb(164, 164, 164);
+}
+
+#second-monitor-letter-placeholder {
+  position: absolute;
+  font-size: 1.8rem;
+  visibility: hidden;
+  pointer-events: none;
+  letter-spacing: 1px;
+  opacity: 0;
+}
+
+.error {
+  user-select: none;
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  color: rgb(255, 128, 0);
+  font-size: 1.1rem;
+  transition: all 0.3s ease-in-out;
+  opacity: 1;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.error svg {
+  width: 1.4rem;
+}
+
+.error.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
