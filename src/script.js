@@ -111,6 +111,8 @@ function handleOperations(operation) {
     } else calculatorState.curVal = val;
   }
 
+  if (!val && !calculatorState.curVal) return;
+
   if (operation === "minus") calculatorState.curOperation = " -";
   else if (operation === "plus") calculatorState.curOperation = " +";
   else if (operation === "divide") calculatorState.curOperation = " ÷";
